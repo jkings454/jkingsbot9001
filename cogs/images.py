@@ -1,4 +1,5 @@
 from io import BytesIO
+import os
 import datetime
 from discord.ext import commands
 from util.rainbowify import rainbowify
@@ -10,9 +11,9 @@ class Images():
         self.bot = bot
 
     @commands.command(pass_context=True)
-    def gayvatar(self, ctx, user = None):
+    async def gayvatar(self, ctx, user = None):
         if user:
-            await self.bot.say("yikes! this isn't quite ready yet!")
+            await self.bot.say("This isn't implemented yet!")
         else:
             r = requests.get(ctx.message.author.avatar_url)
             user_avi = Image.open(BytesIO(r.content))
@@ -22,5 +23,13 @@ class Images():
 
             user_avi.close()
 
+            await self.bot.send_file(ctx.message.channel, filename)
+
+            os.remove(filename)
+
+
             
-            
+
+
+def setup(bot):
+    bot.add_cog(Images(bot))

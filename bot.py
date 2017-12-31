@@ -25,7 +25,7 @@ bot = commands.Bot(get_prefix, pm_help=True, description=description)
 
 
 game = random.choice(conf.settings["games"])
-startup_extensions = ["cogs.rng", "cogs.fun"]
+startup_extensions = ["cogs.rng", "cogs.fun", "cogs.images"]
 
 @bot.event
 async def on_ready():
