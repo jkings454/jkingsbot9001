@@ -9,7 +9,7 @@ def rainbowify(image, output="test.png"):
     rainbow = Image.open("assets/rainbow.jpg")
 
     rainbow = ImageOps.fit(rainbow, (image.size)).convert(image.mode)
-    blended = Image.blend(image, rainbow, 0.3)
+    blended = Image.blend(image, rainbow, 0.5)
     blended.save(output)
 
 if __name__ == "__main__":
