@@ -1,0 +1,6 @@
+.vscode
+.vscode
+botenv/
+settings.json
+*.pyc
+*.log
