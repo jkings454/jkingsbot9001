@@ -3,8 +3,9 @@ import os
 import datetime
 from discord.ext import commands
 from util.rainbowify import rainbowify
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import requests
+import random
 
 class Images():
     def __init__(self, bot):
@@ -17,6 +18,7 @@ class Images():
         """
         if username:
             user = ctx.message.server.get_member_named(username)
+            username = user.name
             if user == None:
                 await self.bot.say("Sorry! I couldn't find a user named " + username)
                 return
@@ -35,5 +37,42 @@ class Images():
 
         os.remove(filename)
 
+    @commands.command(pass_context=True)
+    async def gayculator(self, ctx, username=None):
+        if username:
+            user = ctx.message.server.get_member_named(username)
+            if user == None:
+                await self.bot.say("Sorry! I couldn't find a user named " + username)
+                return
+            r = requests.get(user.avatar_url, {"size": "16"})
+        else:
+            username = ctx.message.author.name
+            r = requests.get(ctx.message.author.avatar_url, {"size": "16"})
+
+        userval = 0
+        for char in username:
+            userval += ord(char)
+
+        random.seed(userval)
+        percent_gay = random.randrange(0, 200)
+
+        user_avi = Image.open(BytesIO(r.content))
+
+        filename = str(datetime.datetime.now()) + ctx.message.author.name + ".png"
+        rainbowify(user_avi, filename)
+        user_avi.close()
+
+        rainbowed = Image.open(filename)
+        draw = ImageDraw.Draw(rainbowed)
+        font = ImageFont.truetype("Comic_Sans_MS.ttf", 48)
+
+        draw.text((0, 0), "{0}% gya".format(percent_gay), font=font)
+
+        rainbowed.save(filename)
+
+        await self.bot.send_file(ctx.message.channel, filename)
+
+        os.remove(filename)
+    
 def setup(bot):
     bot.add_cog(Images(bot))
