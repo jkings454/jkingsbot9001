@@ -2,7 +2,7 @@ from io import BytesIO
 import os
 import datetime
 from discord.ext import commands
-from util.rainbowify import rainbowify
+from util.helpers import rainbowify, textify
 from PIL import Image, ImageFont, ImageDraw
 import requests
 import random
@@ -49,9 +49,7 @@ class Images():
             username = ctx.message.author.name
             r = requests.get(ctx.message.author.avatar_url, {"size": "16"})
 
-        userval = 0
-        for char in username:
-            userval += ord(char)
+        userval = sum(map(ord, username))
 
         random.seed(userval)
         percent_gay = random.randrange(0, 200)
@@ -60,15 +58,12 @@ class Images():
 
         filename = str(datetime.datetime.now()) + ctx.message.author.name + ".png"
         rainbowify(user_avi, filename)
+
         user_avi.close()
 
-        rainbowed = Image.open(filename)
-        draw = ImageDraw.Draw(rainbowed)
-        font = ImageFont.truetype("Comic_Sans_MS.ttf", 48)
-
-        draw.text((0, 0), "{0}% gya".format(percent_gay), font=font)
-
+        rainbowed = textify("{}% gay".format(percent_gay), filename)
         rainbowed.save(filename)
+        rainbowed.close()
 
         await self.bot.send_file(ctx.message.channel, filename)
 
