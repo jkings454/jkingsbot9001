@@ -61,7 +61,7 @@ class Images():
 
         user_avi.close()
 
-        rainbowed = textify("{}% gay".format(percent_gay), filename)
+        rainbowed = textify("{}% gya".format(percent_gay), filename)
         rainbowed.save(filename)
         rainbowed.close()
 

@@ -7,6 +7,7 @@ from util import config
 from util.prefixes import get_prefix
 from util.prefixes import get_server_prefix, get_user_prefix
 from util.prefixes import set_server_prefix, set_user_prefix
+from events.logging import Logger as EventLogger
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -25,7 +26,9 @@ bot = commands.Bot(get_prefix, pm_help=True, description=description)
 
 
 game = random.choice(conf.settings["games"])
-startup_extensions = ["cogs.rng", "cogs.fun", "cogs.images"]
+startup_extensions = ["cogs.rng", "cogs.fun", "cogs.images", "cogs.admin"]
+
+event_logger = EventLogger(bot)
 
 @bot.event
 async def on_ready():
@@ -44,6 +47,37 @@ async def on_server_join(server):
     """
     conf.settings["servers"] = {server.id: {}}
     conf.save()
+
+@bot.event
+async def on_member_join(member):
+    try:
+        server_conf = conf.settings["servers"][member.server.id]
+        if "logging_channel" in server_conf:
+            channel = bot.get_channel(server_conf["logging_channel"])
+            await event_logger.log_member_join(member, channel)
+    except ValueError:
+        conf.settings["servers"][member.server.id] = {}
+
+@bot.event
+async def on_member_remove(member):
+    try:
+        server_conf = conf.settings["servers"][member.server.id]
+        if "logging_channel" in server_conf:
+            channel = bot.get_channel(server_conf["logging_channel"])
+            await event_logger.log_member_leave(member, channel)
+    except ValueError:
+        conf.settings["servers"][member.server.id] = {}
+
+@bot.event
+async def on_member_ban(member):
+    try:
+        server_conf = conf.settings["servers"][member.server.id]
+        if "logging_channel" in server_conf:
+            channel = bot.get_channel(server_conf["logging_channel"])
+            await event_logger.log_member_ban(member, channel)
+    except ValueError:
+        conf.settings["servers"][member.server.id] = {}
+
 
 @bot.event
 async def on_message(message : discord.Message):

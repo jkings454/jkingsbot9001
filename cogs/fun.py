@@ -1,5 +1,6 @@
 from discord.ext import commands
 import random
+import requests
 
 class Fun():
     def __init__(self, bot):
@@ -22,6 +23,9 @@ class Fun():
             ]
         await self.bot.say(random.choice(gays))
 
+    @commands.command()
+    async def pupper(self):
+        reddit_data = requests.get("https://reddit.com/r/rarepuppers.json")
 
 def setup(bot):
     bot.add_cog(Fun(bot))

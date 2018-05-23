@@ -58,7 +58,8 @@ def textify(text, filename):
     posx = (width / 2) - (font_width / 2)
     posy = height
 
-    draw.text((posx, posy), text, font=font)
+    fill = ImageColor.getrgb(Color("black").get_hex())
+    draw.text((posx, posy), text, font=font, fill=fill)
 
     return expanded
     
